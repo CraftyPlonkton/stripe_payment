@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="UTF-8">
+  <head>
+    <title>Buy {{ item.name }}</title>
+  </head>
+  <body>
+    <h1>{{ item.name }}</h1>
+    <p>Description:</p>
+    <p>{{ item.description }}</p>
+    <a href="{% url 'items:buy_item' item.id %}"> <button> Buy {{ item.price }} {{ item.currency }}</button> </a>
+  </body>
+</html>
