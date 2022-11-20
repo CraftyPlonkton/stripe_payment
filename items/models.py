@@ -37,55 +37,78 @@ class Item(models.Model):
 
 
 class Discount(models.Model):
-    name = models.CharField(max_length=256, unique=True)
+    name = models.CharField(
+        max_length=256,
+        unique=True,
+        verbose_name='Название',
+        help_text='Введите название скидки'
+    )
     value_percent = models.PositiveSmallIntegerField(
-        default=0,
-        validators=[
-            MaxValueValidator(100)
-        ]
+        validators=[MaxValueValidator(100)],
+        verbose_name='Значение %',
+        help_text='Введите значение в %'
     )
 
+    class Meta:
+        verbose_name = 'Скидка'
+        verbose_name_plural = 'Скидки'
+
     def __str__(self):
-        return self.name
+        return f'{self.name}: {self.value_percent}%'
 
 
 class Tax(models.Model):
-    name = models.CharField(max_length=256, unique=True)
+    name = models.CharField(
+        max_length=256,
+        unique=True,
+        verbose_name='Название',
+        help_text='Введите название налога'
+    )
     value_percent = models.PositiveSmallIntegerField(
-        default=0,
-        validators=[
-            MaxValueValidator(100)
-        ]
+        validators=[MaxValueValidator(100)],
+        verbose_name='Значение %',
+        help_text='Введите значение в %'
     )
 
+    class Meta:
+        verbose_name = 'Налог'
+        verbose_name_plural = 'Налоги'
+
     def __str__(self):
-        return self.name
+        return f'{self.name}: {self.value_percent}%'
 
 
 class Order(models.Model):
     items = models.ManyToManyField(
         Item,
+        related_name='order',
         verbose_name='Товар',
-        help_text='Выберите товар',
-        related_name='order'
+        help_text='Выберите товар'
     )
     discount = models.ForeignKey(
         Discount,
         default=None,
-        verbose_name='Скидка',
-        help_text='Выберите скидку',
         related_name='order',
         on_delete=models.SET_DEFAULT,
         null=True,
-        blank=True
+        blank=True,
+        verbose_name='Скидка',
+        help_text='Выберите скидку'
     )
     tax = models.ForeignKey(
         Tax,
         default=None,
-        verbose_name='Налог',
-        help_text='Выберите налоговую ставку',
         related_name='order',
         on_delete=models.SET_DEFAULT,
         null=True,
-        blank=True
+        blank=True,
+        verbose_name='Налог',
+        help_text='Выберите налоговую ставку'
     )
+
+    class Meta:
+        verbose_name = 'Заказ'
+        verbose_name_plural = 'Заказы'
+
+    def __str__(self):
+        return f'Заказ ID: {self.id}'

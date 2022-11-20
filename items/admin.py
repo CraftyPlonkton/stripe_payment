@@ -12,7 +12,19 @@ class ItemAdmin(admin.ModelAdmin):
     short_description.__name__ = 'Сокращенное описание'
 
 
+class DiscountAdmin(admin.ModelAdmin):
+    list_display = ('name', 'value_percent')
+
+
+class TaxAdmin(admin.ModelAdmin):
+    list_display = ('name', 'value_percent')
+
+
+class OrderAdmin(admin.ModelAdmin):
+    filter_horizontal = ('items',)
+
+
 admin.site.register(Item, ItemAdmin)
-admin.site.register(Discount)
-admin.site.register(Tax)
-admin.site.register(Order)
+admin.site.register(Discount, DiscountAdmin)
+admin.site.register(Tax, TaxAdmin)
+admin.site.register(Order, OrderAdmin)
