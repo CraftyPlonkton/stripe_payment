@@ -1,12 +1,18 @@
+import os
 from typing import Optional
 
 import stripe
-from django.shortcuts import render, get_object_or_404, redirect, reverse
-from .models import Item, Order
-from .forms import OrderForm
+from django.shortcuts import get_object_or_404, redirect, render, reverse
+from dotenv import load_dotenv
+from stripe.error import StripeError
 
-# TODO убрать в енв
-stripe.api_key = 'sk_test_4eC39HqLyjWDarjtT1zdp7dc'
+from .forms import OrderForm
+from .models import Item, Order
+
+load_dotenv()
+stripe.api_key = os.getenv(
+    'STRIPE_API_KEY', default='sk_test_4eC39HqLyjWDarjtT1zdp7dc'
+)
 
 
 def create_line_items(item: Item, tax_id: Optional[str] = None) -> dict:
@@ -45,6 +51,12 @@ def index(request):
     return render(request, template)
 
 
+def error_page(request):
+    template = 'error_page.html'
+    context = {'error': request.session.get('error')}
+    return render(request, template, context)
+
+
 def item_detail(request, item_id):
     template = 'item_detail.html'
     item = get_object_or_404(Item, id=item_id)
@@ -65,8 +77,12 @@ def buy_item(request, item_id):
     item = get_object_or_404(Item, id=item_id)
     line_items = [create_line_items(item)]
     line_items = add_session_settings(line_items, request)
-    session = stripe.checkout.Session.create(**line_items)
-    return redirect(session.url, code=303)
+    try:
+        session = stripe.checkout.Session.create(**line_items)
+        return redirect(session.url, code=303)
+    except StripeError as error:
+        request.session['error'] = error.user_message
+        return redirect('items:error_page')
 
 
 def buy_order(request, order_id):
@@ -84,5 +100,9 @@ def buy_order(request, order_id):
         ).get('id')
     line_items = [create_line_items(item, tax) for item in items]
     line_items = add_session_settings(line_items, request, coupon)
-    session = stripe.checkout.Session.create(**line_items)
-    return redirect(session.url, code=303)
+    try:
+        session = stripe.checkout.Session.create(**line_items)
+        return redirect(session.url, code=303)
+    except StripeError as error:
+        request.session['error'] = error.user_message
+        return redirect('items:error_page')

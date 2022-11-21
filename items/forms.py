@@ -1,5 +1,6 @@
 from django import forms
-from .models import Order, Item
+
+from .models import Item, Order
 
 
 class OrderMMCF(forms.ModelMultipleChoiceField):

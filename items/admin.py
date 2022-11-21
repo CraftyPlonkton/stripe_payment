@@ -1,5 +1,6 @@
 from django.contrib import admin
-from.models import Item, Discount, Tax, Order
+
+from .models import Discount, Item, Order, Tax
 
 
 class ItemAdmin(admin.ModelAdmin):
