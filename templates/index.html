@@ -2,9 +2,17 @@
 <html lang="en">
 <meta charset="UTF-8">
     <head>
-        <title>Title</title>
+        <title>Catalogue</title>
     </head>
     <body>
-        <h1> Index </h1>
+        {% for item in items %}
+            <ul>
+                <li>
+                    <p>Товар: {{ item.name }}</p>
+                    <p>Цена: {{ item.price }} {{ item.currency }}</p>
+                    <a href="{% url 'items:item_detail' item.id %}">Подробнее</a>
+                </li>
+            </ul>
+        {% endfor %}
     </body>
 </html>

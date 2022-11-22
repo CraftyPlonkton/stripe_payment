@@ -47,8 +47,10 @@ def add_session_settings(
 
 
 def index(request):
+    items = Item.objects.all()
     template = 'index.html'
-    return render(request, template)
+    context = {'items': items}
+    return render(request, template, context)
 
 
 def error_page(request):
