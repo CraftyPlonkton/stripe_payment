@@ -2,6 +2,7 @@ import os
 from typing import Optional
 
 import stripe
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render, reverse
 from dotenv import load_dotenv
 from stripe.error import StripeError
@@ -81,7 +82,7 @@ def buy_item(request, item_id):
     line_items = add_session_settings(line_items, request)
     try:
         session = stripe.checkout.Session.create(**line_items)
-        return redirect(session.url, code=303)
+        return JsonResponse(session)
     except StripeError as error:
         request.session['error'] = error.user_message
         return redirect('items:error_page')

@@ -2,12 +2,22 @@
 <html lang="en">
 <meta charset="UTF-8">
   <head>
+      <script src="https://js.stripe.com/v3/"></script>
     <title>Buy {{ item.name }}</title>
   </head>
   <body>
     <h1>{{ item.name }}</h1>
     <p>Description:</p>
     <p>{{ item.description }}</p>
-    <a href="{% url 'items:buy_item' item.id %}"> <button> Купить {{ item.price }} {{ item.currency }}</button> </a>
+    <button id="buy-button">Buy</button>
+    <script type="text/javascript">
+      let buyButton = document.getElementById('buy-button');
+      let stripe = Stripe('pk_test_TYooMQauvdEDq54NiTphI7jx');
+      buyButton.addEventListener('click', function() {
+          fetch('/buy/{{ item.id }}', {method: 'GET'})
+              .then(response => response.json())
+              .then(session => stripe.redirectToCheckout({sessionId: session.id}))
+      });
+    </script>
   </body>
 </html>
